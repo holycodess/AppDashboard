@@ -3,6 +3,7 @@
 import { useProfile } from '@/hooks/use-profile'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Users, Shield, Activity, TrendingUp } from 'lucide-react'
 
 export default function DashboardPage() {
