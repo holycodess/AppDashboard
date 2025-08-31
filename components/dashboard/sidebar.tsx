@@ -11,6 +11,8 @@ import {
   Settings,
   FileText,
   Shield,
+  BarChart3,
+  Bell,
   Menu,
   X
 } from 'lucide-react'
@@ -34,6 +36,18 @@ const baseNavItems = [
 ]
 
 const adminNavItems = [
+  {
+    title: 'Analytics',
+    href: '/dashboard/admin/analytics',
+    icon: BarChart3,
+    roles: ['superadmin']
+  },
+  {
+    title: 'Notifications',
+    href: '/dashboard/admin/notifications',
+    icon: Bell,
+    roles: ['superadmin']
+  },
   {
     title: 'User Management',
     href: '/dashboard/admin/users',

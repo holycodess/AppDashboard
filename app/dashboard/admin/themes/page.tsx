@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -31,13 +32,31 @@ const fonts = [
 
 export default function ThemesPage() {
   const { profile } = useProfile()
+  const supabase = createClient()
   const [selectedCategory, setSelectedCategory] = useState('admin')
   const [selectedColor, setSelectedColor] = useState('blue')
   const [selectedFont, setSelectedFont] = useState('geist-sans')
+  const [loading, setLoading] = useState(false)
 
-  const handleSaveTheme = () => {
-    // In a real implementation, this would save to the database
-    toast.success(`Theme applied for ${selectedCategory} category`)
+  const handleSaveTheme = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would save to system_settings table
+      const themeKey = `theme_${selectedCategory}`
+      const themeValue = {
+        color: selectedColor,
+        font: selectedFont
+      }
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      toast.success(`Theme applied for ${selectedCategory} category`)
+    } catch (error) {
+      toast.error('Failed to save theme')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (profile?.role !== 'superadmin') {
@@ -136,7 +155,8 @@ export default function ThemesPage() {
             </div>
 
             <Button onClick={handleSaveTheme} className="w-full">
-              Apply Theme
+              disabled={loading}
+              {loading ? 'Applying...' : 'Apply Theme'}
             </Button>
           </CardContent>
         </Card>

@@ -145,7 +145,10 @@ export default function UsersPage() {
                   </Avatar>
                   <div>
                     <h3 className="font-medium">{user.full_name || 'Unnamed User'}</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground truncate max-w-48">
+                      ID: {user.id.slice(0, 8)}...
+                    </p>
+                    <p className="text-xs text-muted-foreground">
                       Created {new Date(user.created_at).toLocaleDateString()}
                     </p>
                   </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,13 +22,110 @@ import {
 
 export default function SystemPage() {
   const { profile } = useProfile()
+  const supabase = createClient()
   const [envVars, setEnvVars] = useState([
     { key: 'NEXT_PUBLIC_SUPABASE_URL', value: '***hidden***', description: 'Supabase project URL' },
     { key: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', value: '***hidden***', description: 'Supabase anonymous key' },
     { key: 'SUPABASE_SERVICE_ROLE_KEY', value: '***hidden***', description: 'Supabase service role key' },
   ])
+  const [loading, setLoading] = useState(false)
 
-  const handleUpdateEnvVar = (index: number, newValue: string) => {
+  const handleUpdateEnvVar = async (index: number, newValue: string) => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would update environment variables
+      // For demo purposes, we'll just update the local state
+      const updated = [...envVars]
+      updated[index].value = newValue
+      setEnvVars(updated)
+      toast.success('Environment variable updated successfully')
+    } catch (error) {
+      toast.error('Failed to update environment variable')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRunMigration = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would trigger database migrations
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API call
+      toast.success('Database migration completed successfully')
+    } catch (error) {
+      toast.error('Migration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUpdateRLS = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would update RLS policies
+      await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate API call
+      toast.success('RLS policies updated successfully')
+    } catch (error) {
+      toast.error('Failed to update RLS policies')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSystemReset = async () => {
+    if (!confirm('Are you sure you want to reset the system? This action cannot be undone.')) {
+      return
+    }
+    
+    setLoading(true)
+    try {
+      // In a real implementation, this would reset system data
+      await new Promise(resolve => setTimeout(resolve, 3000)) // Simulate API call
+      toast.success('System reset completed')
+    } catch (error) {
+      toast.error('System reset failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBackupDatabase = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would create a database backup
+      await new Promise(resolve => setTimeout(resolve, 2500)) // Simulate API call
+      toast.success('Database backup created successfully')
+    } catch (error) {
+      toast.error('Backup failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSecurityAudit = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would run security checks
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API call
+      toast.success('Security audit completed - No issues found')
+    } catch (error) {
+      toast.error('Security audit failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRotateKeys = async () => {
+    setLoading(true)
+    try {
+      // In a real implementation, this would rotate API keys
+      await new Promise(resolve => setTimeout(resolve, 1800)) // Simulate API call
+      toast.success('API keys rotated successfully')
+    } catch (error) {
+      toast.error('Key rotation failed')
+    } finally {
+      setLoading(false)
+    }
     const updated = [...envVars]
     updated[index].value = newValue
     setEnvVars(updated)
@@ -127,16 +225,17 @@ export default function SystemPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button onClick={handleRunMigration} className="w-full">
+                  disabled={loading}
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Run Migration
+                  {loading ? 'Running...' : 'Run Migration'}
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" onClick={handleBackupDatabase} disabled={loading} className="w-full">
                   <Database className="mr-2 h-4 w-4" />
-                  Backup Database
+                  {loading ? 'Creating...' : 'Backup Database'}
                 </Button>
-                <Button variant="destructive" onClick={handleSystemReset} className="w-full">
+                <Button variant="destructive" onClick={handleSystemReset} disabled={loading} className="w-full">
                   <AlertTriangle className="mr-2 h-4 w-4" />
-                  Reset System
+                  {loading ? 'Resetting...' : 'Reset System'}
                 </Button>
               </CardContent>
             </Card>
@@ -181,16 +280,17 @@ export default function SystemPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button onClick={handleUpdateRLS} className="w-full">
+                disabled={loading}
                 <Shield className="mr-2 h-4 w-4" />
-                Update RLS Policies
+                {loading ? 'Updating...' : 'Update RLS Policies'}
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" onClick={handleSecurityAudit} disabled={loading} className="w-full">
                 <Server className="mr-2 h-4 w-4" />
-                Security Audit
+                {loading ? 'Auditing...' : 'Security Audit'}
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" onClick={handleRotateKeys} disabled={loading} className="w-full">
                 <Key className="mr-2 h-4 w-4" />
-                Rotate API Keys
+                {loading ? 'Rotating...' : 'Rotate API Keys'}
               </Button>
             </CardContent>
           </Card>

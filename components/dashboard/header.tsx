@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Search, LogOut, User } from 'lucide-react'
+import { Search, LogOut, User, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -32,9 +32,12 @@ export function Header() {
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 lg:px-6">
       <div className="flex items-center gap-4">
         <MobileSidebar />
-        <div className="hidden sm:block text-lg font-semibold text-slate-900 dark:text-white">
-          Dashboard
-        </div>
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Shield className="h-8 w-8 text-blue-600" />
+          <div className="hidden sm:block text-lg font-semibold text-slate-900 dark:text-white">
+            Dashboard
+          </div>
+        </Link>
       </div>
 
       <div className="flex-1 max-w-md mx-4">

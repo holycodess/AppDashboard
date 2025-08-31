@@ -15,7 +15,7 @@ export interface Database {
           full_name: string | null
           avatar_url: string | null
           role: 'superadmin' | 'staff' | 'vendor' | 'user'
-          type: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser' | null
+          type: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser'
           created_at: string
           updated_at: string
         }
@@ -24,7 +24,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           role?: 'superadmin' | 'staff' | 'vendor' | 'user'
-          type?: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser' | null
+          type?: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser'
           created_at?: string
           updated_at?: string
         }
@@ -33,7 +33,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           role?: 'superadmin' | 'staff' | 'vendor' | 'user'
-          type?: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser' | null
+          type?: 'SuperAdmin' | 'Account' | 'Support' | 'Media' | 'Partner' | 'Supplier' | 'PublicUser'
           created_at?: string
           updated_at?: string
         }
