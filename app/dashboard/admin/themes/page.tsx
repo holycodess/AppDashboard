@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { Palette, Type } from 'lucide-react'
 
 const themeColors = [
   { name: 'Black', value: 'black', primary: '#000000', secondary: '#1f1f1f' },
@@ -28,6 +29,14 @@ const fonts = [
   { name: 'Inter', value: 'inter' },
   { name: 'Roboto', value: 'roboto' },
   { name: 'Open Sans', value: 'open-sans' },
+  { name: 'Poppins', value: 'poppins' },
+]
+
+const userCategories = [
+  { name: 'Admin', value: 'admin', description: 'SuperAdmin users' },
+  { name: 'Staff', value: 'staff', description: 'Account, Support, Media staff' },
+  { name: 'Vendor', value: 'vendor', description: 'Partner, Supplier vendors' },
+  { name: 'User', value: 'user', description: 'PublicUser regular users' },
 ]
 
 export default function ThemesPage() {
@@ -48,12 +57,26 @@ export default function ThemesPage() {
         font: selectedFont
       }
       
-      // Simulate API call
+      // Simulate API call to update system settings
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       toast.success(`Theme applied for ${selectedCategory} category`)
     } catch (error) {
       toast.error('Failed to save theme')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetToDefaults = async () => {
+    setLoading(true)
+    try {
+      setSelectedColor('blue')
+      setSelectedFont('geist-sans')
+      await new Promise(resolve => setTimeout(resolve, 500))
+      toast.success('Theme reset to defaults')
+    } catch (error) {
+      toast.error('Failed to reset theme')
     } finally {
       setLoading(false)
     }
@@ -74,6 +97,10 @@ export default function ThemesPage() {
     )
   }
 
+  const selectedColorData = themeColors.find(c => c.value === selectedColor)
+  const selectedFontData = fonts.find(f => f.value === selectedFont)
+  const selectedCategoryData = userCategories.find(c => c.value === selectedCategory)
+
   return (
     <div className="space-y-6">
       <div>
@@ -88,7 +115,10 @@ export default function ThemesPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Theme Configuration</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Palette className="h-5 w-5" />
+              Theme Configuration
+            </CardTitle>
             <CardDescription>
               Set themes for different user categories.
             </CardDescription>
@@ -101,17 +131,21 @@ export default function ThemesPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="staff">Staff</SelectItem>
-                  <SelectItem value="vendor">Vendor</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
+                  {userCategories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      <div>
+                        <div className="font-medium">{category.name}</div>
+                        <div className="text-xs text-muted-foreground">{category.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Color Scheme</Label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 {themeColors.map((color) => (
                   <button
                     key={color.value}
@@ -124,22 +158,30 @@ export default function ThemesPage() {
                   >
                     <div className="flex gap-1">
                       <div
-                        className="w-4 h-4 rounded-full"
+                        className="w-4 h-4 rounded-full border border-slate-300"
                         style={{ backgroundColor: color.primary }}
                       />
                       <div
-                        className="w-4 h-4 rounded-full"
+                        className="w-4 h-4 rounded-full border border-slate-300"
                         style={{ backgroundColor: color.secondary }}
                       />
                     </div>
                     <span className="text-sm font-medium">{color.name}</span>
+                    {selectedColor === color.value && (
+                      <div className="ml-auto">
+                        <Badge variant="secondary">Selected</Badge>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Font Family</Label>
+              <Label className="flex items-center gap-2">
+                <Type className="h-4 w-4" />
+                Font Family
+              </Label>
               <Select value={selectedFont} onValueChange={setSelectedFont}>
                 <SelectTrigger>
                   <SelectValue />
@@ -147,17 +189,25 @@ export default function ThemesPage() {
                 <SelectContent>
                   {fonts.map((font) => (
                     <SelectItem key={font.value} value={font.value}>
-                      {font.name}
+                      <span style={{ fontFamily: font.name }}>{font.name}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <Button onClick={handleSaveTheme} className="w-full">
-              disabled={loading}
-              {loading ? 'Applying...' : 'Apply Theme'}
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleSaveTheme} disabled={loading} className="flex-1">
+                {loading ? 'Applying...' : 'Apply Theme'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={handleResetToDefaults} 
+                disabled={loading}
+              >
+                Reset
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -165,51 +215,123 @@ export default function ThemesPage() {
           <CardHeader>
             <CardTitle>Theme Preview</CardTitle>
             <CardDescription>
-              Preview how the theme will look for {selectedCategory} users.
+              Preview how the theme will look for {selectedCategoryData?.name} users.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div 
-              className="rounded-lg border p-4 space-y-4"
+              className="rounded-lg border p-6 space-y-4 bg-white dark:bg-slate-800"
               style={{
-                borderColor: themeColors.find(c => c.value === selectedColor)?.primary,
+                borderColor: selectedColorData?.primary,
               }}
             >
               <div className="flex items-center justify-between">
                 <h3 
-                  className="font-semibold"
+                  className="text-xl font-semibold"
                   style={{ 
-                    color: themeColors.find(c => c.value === selectedColor)?.primary,
-                    fontFamily: fonts.find(f => f.value === selectedFont)?.name 
+                    color: selectedColorData?.primary,
+                    fontFamily: selectedFontData?.name 
                   }}
                 >
-                  Sample Header
+                  Sample Dashboard
                 </h3>
                 <Badge 
                   style={{ 
-                    backgroundColor: themeColors.find(c => c.value === selectedColor)?.secondary,
+                    backgroundColor: selectedColorData?.secondary,
                     color: 'white'
                   }}
                 >
-                  {selectedCategory}
+                  {selectedCategoryData?.name}
                 </Badge>
               </div>
-              <div className="text-sm text-muted-foreground">
-                This is how the interface will appear for {selectedCategory} users.
-              </div>
-              <Button 
-                size="sm"
-                style={{ 
-                  backgroundColor: themeColors.find(c => c.value === selectedColor)?.primary,
-                  fontFamily: fonts.find(f => f.value === selectedFont)?.name 
-                }}
+              
+              <div 
+                className="text-sm text-muted-foreground"
+                style={{ fontFamily: selectedFontData?.name }}
               >
-                Sample Button
-              </Button>
+                This is how the interface will appear for {selectedCategoryData?.name} users 
+                with the {selectedColorData?.name} color scheme and {selectedFontData?.name} font.
+              </div>
+              
+              <div className="flex gap-2">
+                <Button 
+                  size="sm"
+                  style={{ 
+                    backgroundColor: selectedColorData?.primary,
+                    fontFamily: selectedFontData?.name 
+                  }}
+                >
+                  Primary Action
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  style={{ 
+                    borderColor: selectedColorData?.primary,
+                    color: selectedColorData?.primary,
+                    fontFamily: selectedFontData?.name 
+                  }}
+                >
+                  Secondary Action
+                </Button>
+              </div>
+
+              <div className="mt-4 p-3 rounded border border-slate-200 dark:border-slate-600">
+                <div className="flex items-center gap-2 mb-2">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: selectedColorData?.primary }}
+                  />
+                  <span 
+                    className="text-sm font-medium"
+                    style={{ fontFamily: selectedFontData?.name }}
+                  >
+                    Sample Card Header
+                  </span>
+                </div>
+                <p 
+                  className="text-xs text-muted-foreground"
+                  style={{ fontFamily: selectedFontData?.name }}
+                >
+                  This shows how cards and content will be styled.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Current Theme Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Current Theme Settings</CardTitle>
+          <CardDescription>
+            Overview of theme configurations for all user categories.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {userCategories.map((category) => (
+              <div 
+                key={category.value}
+                className="p-4 rounded-lg border border-slate-200 dark:border-slate-700"
+              >
+                <h4 className="font-medium mb-2">{category.name}</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    <span>Blue Theme</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Type className="w-3 h-3" />
+                    <span>Geist Sans</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

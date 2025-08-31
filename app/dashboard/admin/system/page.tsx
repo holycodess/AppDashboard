@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -34,7 +33,6 @@ export default function SystemPage() {
     setLoading(true)
     try {
       // In a real implementation, this would update environment variables
-      // For demo purposes, we'll just update the local state
       const updated = [...envVars]
       updated[index].value = newValue
       setEnvVars(updated)
@@ -126,22 +124,6 @@ export default function SystemPage() {
     } finally {
       setLoading(false)
     }
-    const updated = [...envVars]
-    updated[index].value = newValue
-    setEnvVars(updated)
-    toast.success('Environment variable updated')
-  }
-
-  const handleRunMigration = () => {
-    toast.success('Database migration initiated')
-  }
-
-  const handleUpdateRLS = () => {
-    toast.success('RLS policies updated')
-  }
-
-  const handleSystemReset = () => {
-    toast.success('System reset initiated')
   }
 
   if (profile?.role !== 'superadmin') {
@@ -196,11 +178,20 @@ export default function SystemPage() {
                     <Input
                       type="password"
                       value={envVar.value}
-                      onChange={(e) => handleUpdateEnvVar(index, e.target.value)}
+                      onChange={(e) => {
+                        const updated = [...envVars]
+                        updated[index].value = e.target.value
+                        setEnvVars(updated)
+                      }}
                       placeholder="Enter value"
                       className="flex-1"
                     />
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleUpdateEnvVar(index, envVars[index].value)}
+                      disabled={loading}
+                    >
                       Update
                     </Button>
                   </div>
@@ -224,16 +215,29 @@ export default function SystemPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button onClick={handleRunMigration} className="w-full">
+                <Button 
+                  onClick={handleRunMigration} 
                   disabled={loading}
+                  className="w-full"
+                >
                   <RefreshCw className="mr-2 h-4 w-4" />
                   {loading ? 'Running...' : 'Run Migration'}
                 </Button>
-                <Button variant="outline" onClick={handleBackupDatabase} disabled={loading} className="w-full">
+                <Button 
+                  variant="outline" 
+                  onClick={handleBackupDatabase} 
+                  disabled={loading} 
+                  className="w-full"
+                >
                   <Database className="mr-2 h-4 w-4" />
                   {loading ? 'Creating...' : 'Backup Database'}
                 </Button>
-                <Button variant="destructive" onClick={handleSystemReset} disabled={loading} className="w-full">
+                <Button 
+                  variant="destructive" 
+                  onClick={handleSystemReset} 
+                  disabled={loading} 
+                  className="w-full"
+                >
                   <AlertTriangle className="mr-2 h-4 w-4" />
                   {loading ? 'Resetting...' : 'Reset System'}
                 </Button>
@@ -262,6 +266,10 @@ export default function SystemPage() {
                   <span className="text-sm">Active Connections</span>
                   <Badge variant="outline">45</Badge>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Last Migration</span>
+                  <Badge variant="outline">2 hours ago</Badge>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -279,19 +287,63 @@ export default function SystemPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button onClick={handleUpdateRLS} className="w-full">
+              <Button 
+                onClick={handleUpdateRLS} 
                 disabled={loading}
+                className="w-full"
+              >
                 <Shield className="mr-2 h-4 w-4" />
                 {loading ? 'Updating...' : 'Update RLS Policies'}
               </Button>
-              <Button variant="outline" onClick={handleSecurityAudit} disabled={loading} className="w-full">
+              <Button 
+                variant="outline" 
+                onClick={handleSecurityAudit} 
+                disabled={loading} 
+                className="w-full"
+              >
                 <Server className="mr-2 h-4 w-4" />
                 {loading ? 'Auditing...' : 'Security Audit'}
               </Button>
-              <Button variant="outline" onClick={handleRotateKeys} disabled={loading} className="w-full">
+              <Button 
+                variant="outline" 
+                onClick={handleRotateKeys} 
+                disabled={loading} 
+                className="w-full"
+              >
                 <Key className="mr-2 h-4 w-4" />
                 {loading ? 'Rotating...' : 'Rotate API Keys'}
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Status</CardTitle>
+              <CardDescription>
+                Current security configuration overview.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">RLS Status</span>
+                <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Enabled
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Auth Providers</span>
+                <Badge variant="outline">Google, Facebook</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">API Key Rotation</span>
+                <Badge variant="outline">30 days ago</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Security Score</span>
+                <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  98%
+                </Badge>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
